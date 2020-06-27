@@ -22,21 +22,21 @@ UserRoute.post('/signup', async (req,res,next) =>{
     }
   });
 
-  UserRoute.post("/login", async (req, res, next) => {
-            console.log(connection)
-          const user = await User.findOne({email: req.body.email});
-          const password = await bycript.compare(req.body.password, user.password);
-          console.log(password);
-          if(password){
-            var token = await jwt.sign({
-                exp: 7,
-                data: user.email
-              }, 'marina');
-
-            res.send(token);
-          }
-                
-          });
+  // UserRoute.post("/login", async (req, res, next) => {
+  //           console.log(connection)
+  //         const user = await User.findOne({email: req.body.email});
+  //         const password = await bycript.compare(req.body.password, user.password);
+  //         console.log(password);
+  //         if(password){
+  //           var token = await jwt.sign({
+  //               exp: 7,
+  //               data: user.email
+  //             }, 'marina');
+  //
+  //           res.send(token);
+  //         }
+  //
+  //         });
 
 
   UserRoute.get("/users", (req, res, next) => {
