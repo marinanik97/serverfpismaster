@@ -146,27 +146,21 @@ app.post("/addrezultat", (req, res) => {
   });
 });
 
-app.delete("/brisanjerezultata/:id", (req, res) => {
-  let sql = `DELETE FROM rezultat WHERE rezultatid=${req.body.rezultatid}`;
+app.get("/brisanjerezultata/:id", (req, res) => {
+  let sql = `DELETE FROM rezultat WHERE rezultatid=${req.params.id}`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
-    console.log(result);
-    res.send("Rezultat je kreiran");
+    res.send(result);
   });
 });
 
-app.post("/izmenarezultata", (req, res) => {
-  let rezultat = {
-    rezultatid: req.body.rezultatid,
-    posiljalac: req.body.posiljalac,
-    datumupisa: req.body.datumupisa,
-    uzorakid: req.body.uzorakid,
-  };
-  let sql = "";
-  let query = db.query(sql, rezultat, (err, result) => {
+app.post("/izmenarezultata/:id", (req, res) => {
+
+  let sql = `UPDATE rezultat SET posiljalac='${req.body.posiljalac}', datumupisa='${req.body.datumupisa}', uzorakid=${req.body.uzorakid} WHERE rezultatid=${req.params.id}`;
+  let query = db.query(sql, (err, result) => {
     if (err) throw err;
     console.log(result);
-    res.send("Rezultat je kreiran");
+    res.send(result);
   });
 });
 
@@ -225,6 +219,22 @@ app.get("/tipovi", (req, res) => {
   });
 });
 
+app.get("/izvestaji", (req, res) => {
+  let sql = "SELECT i.datumstampanja, i.izvestajid, i.napomena, d.ime as doktorIme, d.prezime as doktorPrezime, d.specijalnost, k.ime as kartonIme, k.prezime as kartonPrezime FROM izvestaj i INNER JOIN doktor d ON i.doktorid = d.doktorid INNER JOIN karton k ON k.kartonid = i.kartonid  ";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.send(results);
+  });
+});
+
+app.get("/delete_izvestaj/:id", (req, res) => {
+  let sql = `DELETE FROM izvestaj WHERE izvestajid=${req.params.id}`;
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.send(results);
+  });
+});
+
 app.post("/dodajizvestaj", (req, res) => {
   
   let izvestaj = {
@@ -232,26 +242,33 @@ app.post("/dodajizvestaj", (req, res) => {
     datumstampanja: req.body.datumstampanja,
     napomena: req.body.napomena,
     doktorid: req.body.doktorid,
-    rezultatid: req.body.rezultatid,
   };
 
-  let stavke = { stavke: req.body.stavke };
-
-  for (i = 0; i < stavke.stavke.length; i++) {
-    let sql = "INSERT INTO stavkaizvestaja SET ?";
-
-    let query = db.query(sql, stavke.stavke[i], (err, result) => {
-      if (err) throw err;
-      console.log(result);
-    });
-  }
   let sql1 = "INSERT INTO izvestaj SET ?";
 
   let query = db.query(sql1, izvestaj, (err, result) => {
     if (err) throw err;
-    console.log(result);
     res.send("Izvestaj je kreiran, kao i stavke");
+
+
+    let stavke = { stavke: req.body.stavke };
+    let newArray = req.body.stavke.map((stavka, index) =>{
+      return {...stavka, izvestajid: result.insertId, rb: index+1}
+    })
+
+    for (i = 0; i < newArray.length; i++) {
+      let sql = "INSERT INTO stavkaizvestaja SET ?";
+
+      let query = db.query(sql, newArray[i], (err, result) => {
+        if (err) throw err;
+        console.log(result);
+      });
+    }
+
   });
+
+
+
 
   //rollback kad nije dobro
 });
