@@ -101,7 +101,7 @@ app.get("/kartoni/:id", (req, res) => {
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     console.log(results);
-    res.send("Prikazan je karton");
+    res.send(results);
   });
 });
 
@@ -226,15 +226,7 @@ app.get("/tipovi", (req, res) => {
 });
 
 app.post("/dodajizvestaj", (req, res) => {
-  let stavka = {
-    izvestajid: req.body.izvestajid,
-    kartonid: req.body.kartonid,
-    rb: req.body.rb,
-    status: req.body.status,
-    indikator: req.body.indikator,
-    rezultatparametra: req.body.rezultatparametra,
-    parametarid: req.body.parametarid,
-  };
+  
   let izvestaj = {
     kartonid: req.body.kartonid,
     datumstampanja: req.body.datumstampanja,
