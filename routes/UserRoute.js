@@ -1,11 +1,11 @@
 const express = require('express');
 const bycript = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const connection = require("../db/connection");
+// const connection = require("../db1/connection");
 
 
 
-const User = require('../db/models/user');
+const User = require('../database/models/user');
 const UserRoute = new express.Router();
 
 
